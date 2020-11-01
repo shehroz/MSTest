@@ -1,0 +1,98 @@
+﻿@model coderush.Models.Salesman
+
+@{
+    ViewData["Title"] = "Salesman Location";
+}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-building"></i> @ViewData["Title"]</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <div class="content-container-fluid">
+                    <div class="form-control">
+                        <div class="col-md-6">
+                            @Html.DisplayNameFor(model => model.SalesmanName)
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DisplayFor(model => model.SalesmanName)
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <div class="col-md-6">
+                            @Html.DisplayFor(model => Model.CityId)
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="CityId" />
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <div class="col-md-6">
+                            @Html.DisplayNameFor(model => model.SupervisorId)
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="SupervisorId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <!-- /.box-footer-->
+        </div>
+
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+@section Styles{
+}
+@section Scripts{
+
+    <script type="text/javascript">
+        $(function () {
+
+            var dataManagerCity = ej.DataManager({
+                url: "/api/City",
+                adaptor: new ej.WebApiAdaptor()
+            });
+
+            var dataManagerSupervisor = ej.DataManager({
+                url: "/api/Supervisor",
+                adaptor: new ej.WebApiAdaptor()
+            });
+
+            $('#CityId').ejDropDownList({
+                dataSource: dataManagerCity,
+                fields: { id: 'CityId', text: 'CityName', value: 'CityId' },
+                value: @Model.CityId,
+                enabled: false,
+            });
+
+            $('#SupervisorId').ejDropDownList({
+                dataSource: dataManagerSupervisor,
+                fields: { id: 'SupervisorId', text: 'Name', value: 'SupervisorId' },
+                value: @Model.SupervisorId,
+                enabled: false,
+            });
+        });
+
+    </script>
+
+
+}

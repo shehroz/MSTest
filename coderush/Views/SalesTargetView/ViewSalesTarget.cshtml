@@ -1,0 +1,145 @@
+﻿
+@{
+    ViewData["Title"] = "Sales Target View";
+}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title text-primary"><i class="fa fa-certificate"></i> @ViewData["Title"]</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="submit" class="btn btn-primary" onclick="Approve()">Approve</button>
+                    <button type="submit" class="btn btn-danger" onclick="Reject()">Reject</button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                            title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                        <i class="fa fa-times"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="box-body">
+
+                <div id="Grid"></div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+            </div>
+            <!-- /.box-footer-->
+        </div>
+        <!-- /.box -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+@section Styles{
+}
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+
+            var dataManager = ej.DataManager({
+                url: "/api/SalesTargetView",
+                adaptor: new ej.WebApiAdaptor(),
+                offline: true
+            });
+
+            var dataManagerSalesman = ej.DataManager({
+                url: "/api/Salesman",
+                adaptor: new ej.WebApiAdaptor()
+            });
+            dataManager.ready.done(function (e) {
+                $("#Grid").ejGrid({
+                    dataSource: ej.DataManager({
+                        json: e.result,
+                        adaptor: new ej.remoteSaveAdaptor(),
+                        insertUrl: "/api/SalesTarget/Insert",
+                        updateUrl: "/api/SalesTarget/Update",
+                        removeUrl: "/api/SalesTarget/Remove",
+                    }),
+                    toolbarSettings: {
+                        showToolbar: true,
+                        toolbarItems: ["search", "printGrid"]
+                        //toolbarItems: ["edit", "delete", "update", "cancel", "search", "printGrid"]
+                    },
+                    editSettings: {
+                        allowEditing: true,
+                        allowAdding: true,
+                        allowDeleting: true,
+                        showDeleteConfirmDialog: true,
+                        //editMode: "dialog"
+                        editMode: "normal"
+                    },
+                    isResponsive: true,
+                    enableResponsiveRow: true,
+                    allowSorting: true,
+                    allowSearching: true,
+                    allowFiltering: true,
+                    filterSettings: {
+                        filterType: "excel",
+                        maxFilterChoices: 100,
+                        enableCaseSensitivity: false
+                    },
+                    allowPaging: true,
+                    pageSettings: { pageSize: 10, printMode: ej.Grid.PrintMode.CurrentPage },
+                    columns: [
+                        { field: "SalestargetId", headerText: 'Sales Target Id', isPrimaryKey: true, isIdentity: true, visible: false },
+                        { field: "SalesmanId", headerText: 'Salesman', foreignKeyField: "SalesmanId", foreignKeyValue: "SalesmanName", dataSource: dataManagerSalesman, validationRules: { required: true } },
+                        { field: "WaterValue1", headerText: 'Water Value 1', defaultValue: 0, editType: "numericedit", format: "{0:n2}"},
+                        { field: "WaterValue2", headerText: 'Water Value 2', defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "WaterValue3", headerText: 'Total Water Value', allowEditing: false, defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "JuiceValue1", headerText: 'Juice Value 1', defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "JuiceValue2", headerText: 'Juice Value 2', defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "JuiceValue3", headerText: 'Total Juice Value', allowEditing: false, defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "TotalValue1", headerText: 'Total Value 1', allowEditing: false,defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "TotalValue2", headerText: 'Total Value 2', allowEditing: false,defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                        { field: "TotalValue3", headerText: 'Total', allowEditing: false, defaultValue: 0, editType: "numericedit", format: "{0:n2}" },
+                    ],
+                    actionComplete: "complete",
+
+
+                });
+            });
+
+
+        });
+
+        function complete(args) {
+             if (args.requestType == 'beginedit') {
+                $("#" + this._id + "_dialogEdit").ejDialog({ title: "Edit Record" });
+            }
+            
+
+        }
+        function Approve() {
+            $.ajax({
+                url: '/api/SalesTargetView/Approve',
+                type: 'GET',
+                success: function (data) {
+                    alert('Sales Targets are approved');
+                    window.location.reload();
+                }
+            });
+        }
+
+        function Reject() {
+            $.ajax({
+                url: '/api/SalesTargetView/Reject',
+                type: 'GET',
+                success: function (data) {
+                    alert('Sales Targets are rejected');
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+}

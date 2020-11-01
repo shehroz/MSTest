@@ -1,0 +1,143 @@
+﻿@model List<SalesmanLocation>
+@{
+    ViewData["Title"] = "Supervisor's Salesman Location";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Location</title>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?"></script>
+    
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <!-- Main content -->
+        <section class="content">
+            <!-- Default box -->
+            <div class="box">
+
+                <div class="box-header with-border">
+                    <h3 class="box-title text-primary"><i class="fa fa-building-o"></i> @ViewData["Title"]</h3>
+                    <input type="text" class="dropdown-menu active" id="dropdown1" />
+                    <div class="box-tools pull-right">
+
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                title="Collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="mapCanvas" class="card" style="padding-left:200px; width: 1100px; height: 500px" ;>
+                    </div>
+
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer">
+
+                </div>
+                <input type="hidden" id="lat" style="display:none" />
+                <input type="hidden" id="lon" style="display:none" />
+                <!-- /.box-footer-->
+            </div>
+            <!-- /.box -->
+        </section>
+        <!-- /.content -->
+
+    </div>
+
+</body>
+</html>
+@section Scripts{
+<script>
+        //dropdown
+     var items = @Html.Raw(ViewBag.Salesman);
+     var locations = @Html.Raw(ViewBag.Markers);
+
+    $(function () {
+
+            $('#dropdown1').ejDropDownList({
+                dataSource: items,
+                fields: { text: "text", value: "value" },
+                change: "Check",
+            });
+        });
+
+        function Check(args) {
+            $.ajax({
+                url: '/SalesmanSupervisor/GetFilteredData/?id=' + args.value,
+                type: 'GET',
+                success: function (data) {
+                    Initialize(data);
+                }
+            });
+        }
+        //dropdown
+
+
+        //var locations = [['Al Mamzar', 25.3058229, 55.3447672], ['Jumeirah Beach Residence', 25.0778053, 55.1260686],];
+
+       
+
+
+        var map = new google.maps.Map(document.getElementById('mapCanvas'), {
+            zoom: 10,
+            center: new google.maps.LatLng(25.0778053, 55.1260686),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        var infowindow = new google.maps.InfoWindow();
+
+        var marker, i;
+
+        for (i = 0; i < locations.length; i++) {
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                map: map
+            });
+
+            google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                return function () {
+                    infowindow.setContent(locations[i][0]);
+                    infowindow.open(map, marker);
+                }
+            })(marker, i));
+        }
+
+
+        function Initialize(data) {
+            var Newlocations = data;
+            var map = new google.maps.Map(document.getElementById('mapCanvas'), {
+                zoom: 10,
+                center: new google.maps.LatLng(25.0778053, 55.1260686),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            var infowindow = new google.maps.InfoWindow();
+
+            var marker, i;
+
+            for (i = 0; i < Newlocations.length; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(Newlocations[i].lat, Newlocations[i].lon),
+                    map: map
+                });
+
+                google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                    return function () {
+                        infowindow.setContent(Newlocations[i].desc);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+            }
+        }
+
+</script>
+}
